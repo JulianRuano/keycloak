@@ -20,7 +20,7 @@ import com.security.keycloak.service.IKeycloakService;
 
 @RestController
 @RequestMapping("/keycloak")
-@PreAuthorize("hasRole('admin_client_role')")
+@PreAuthorize("hasRole('admin_client')")
 public class KeycloakController {
 
     @Autowired
