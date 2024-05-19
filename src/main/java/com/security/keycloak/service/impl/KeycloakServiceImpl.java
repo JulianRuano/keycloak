@@ -12,6 +12,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
 import com.security.keycloak.dto.UserDTO;
+import com.security.keycloak.dto.UserResponse;
 import com.security.keycloak.service.IKeycloakService;
 import com.security.keycloak.util.KeycloakProvider;
 
@@ -25,26 +26,66 @@ public class KeycloakServiceImpl implements IKeycloakService{
 
     /**
      * Metodo para obtener todos los usuarios de Keycloak
-     * @return List<UserRepresentation>
+     * @return List<UserResponse>
      */
     @Override
-    public List<UserRepresentation> findAllUsers() {
+    public List<UserResponse> findAllUsers() {
         return KeycloakProvider.getRealmResource()
             .users()
-            .list();
+            .list()
+            .stream()
+            .map(user -> {
+                List<RoleRepresentation> roles = KeycloakProvider.getRealmResource()
+                    .users()
+                    .get(user.getId())
+                    .roles()
+                    .realmLevel()
+                    .listEffective();
+
+                return UserResponse.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .roles(roles.stream().map(RoleRepresentation::getName).toList())
+                    .build();
+            })
+            .toList();
+        
     }
 
 
     /**
      * Metodo para obtener un usuario por su id
      * @param userId id del usuario
-     * @return List<UserRepresentation>
+     * @return List<UserResponse>
      */
     @Override
-    public List<UserRepresentation> findUserByUsername(String username) {
+    public List<UserResponse> findUserByUsername(String username) {
+
         return KeycloakProvider.getRealmResource()
             .users()
-            .searchByUsername(username, true);
+            .search(username)
+            .stream()
+            .map(user -> {
+                List<RoleRepresentation> roles = KeycloakProvider.getRealmResource()
+                    .users()
+                    .get(user.getId())
+                    .roles()
+                    .realmLevel()
+                    .listEffective();
+
+                return UserResponse.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .roles(roles.stream().map(RoleRepresentation::getName).toList())
+                    .build();
+            })
+            .toList();
     }
 
     /**
