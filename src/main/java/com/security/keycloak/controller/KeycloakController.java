@@ -71,5 +71,4 @@ public class KeycloakController {
         return ResponseEntity.ok(authService.getRoles(authorizationHeader));
     }
 
-
 }

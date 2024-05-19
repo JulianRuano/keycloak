@@ -10,12 +10,12 @@ import lombok.Value;
 @RequiredArgsConstructor
 @Builder
 public class UserDTO {
+    
+    String username;
+    String email;
+    String firstName;
+    String lastName;
+    String password;
 
-    private String username;
-    private String email;
-    private String firstName;
-    private String lastName;
-    private String password;
-
-    private Set<String> roles;
+    Set<String> roles;
 }

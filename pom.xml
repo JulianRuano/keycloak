@@ -63,11 +63,6 @@
 			<version>3.15.6.Final</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-spring-boot-starter</artifactId>
-			<version>24.0.4</version>
-		</dependency>
 
 		<!-- JwT -->
 		<dependency>
