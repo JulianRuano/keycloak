@@ -7,6 +7,7 @@ import java.security.spec.InvalidKeySpecException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.security.keycloak.dto.UserDTO;
+import com.security.keycloak.dto.UserResponse;
 import com.security.keycloak.service.AuthService;
 import com.security.keycloak.service.IKeycloakService;
 
 @RestController
 @RequestMapping("/keycloak")
 @PreAuthorize("hasRole('admin_client')")
+@CrossOrigin("*")
 public class KeycloakController {
 
     @Autowired
@@ -62,13 +65,8 @@ public class KeycloakController {
     }
 
     @GetMapping("/getCurrentUser")
-    public String obtenerUsername(@RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public UserResponse obtenerUsername(@RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return authService.getCurrentUser(authorizationHeader);
-    }
-
-    @GetMapping("/getRoles")
-    public ResponseEntity<?> obtenerRoles(@RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        return ResponseEntity.ok(authService.getRoles(authorizationHeader));
     }
 
 }

@@ -6,14 +6,13 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 
 import org.springframework.stereotype.Service;
 
-
+import com.security.keycloak.dto.UserResponse;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,7 +27,7 @@ public class AuthService {
 
 
      //obtener usuaruio del token
-     public String getCurrentUser(String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException{
+     public UserResponse getCurrentUser(String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException{
           String jwt = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
@@ -37,49 +36,24 @@ public class AuthService {
         if (jwt != null) {
             PublicKey publicKey = getPublicKey(publicKeyString);
             Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).getBody();
-            String username = claims.get("preferred_username", String.class);
-            return username;
+            @SuppressWarnings("unchecked")
+            UserResponse user = UserResponse.builder()
+            .id(claims.get("sub").toString())
+            .username(claims.getSubject())
+            .email(claims.get("email").toString())
+            .firstName(claims.get("given_name").toString())
+            .lastName(claims.get("family_name").toString())
+            .roles((List<String>) ((Map<String, Object>) ((Map<String, Object>) claims.get("resource_access")).get("microservices_client")).get("roles"))
+            .build();
+
+
+            user.setUsername(claims.getSubject());
+            user.setEmail(claims.get("email").toString());
+            return user;
         } else {
-            return "Token JWT no válido";
+            return null;
         }
     }
-
-    //obtener roles del token
-    @SuppressWarnings("unchecked")
-    public List<String> getRoles(String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        String jwt = null;
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-        }
-    
-        if (jwt != null) {
-            PublicKey publicKey = getPublicKey(publicKeyString);
-            Claims claims = Jwts.parser().setSigningKey(publicKey).parseClaimsJws(jwt).getBody();
-    
-
-            if (claims.containsKey("resource_access")) {
-
-                Map<String, Object> resourceAccess = (Map<String, Object>) claims.get("resource_access");
-                if (resourceAccess != null && resourceAccess.containsKey("microservices_client")) {
-
-                    List<String> roles = (List<String>) ((Map<String, Object>) resourceAccess.get("microservices_client")).get("roles");
-                    if (roles != null) {
-                        // Retornar roles
-                        return roles;
-                    } else {
-                        return Collections.emptyList(); 
-                    }
-                } else {
-                    return Collections.emptyList(); 
-                }
-            } else {
-                return Collections.emptyList(); 
-            }
-        } else {
-            return Collections.emptyList(); 
-        }
-    }
-    
 
     //obtener publicKey
     private PublicKey getPublicKey(String publicKeyString) throws NoSuchAlgorithmException, InvalidKeySpecException {

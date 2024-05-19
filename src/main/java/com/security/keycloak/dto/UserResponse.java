@@ -2,13 +2,18 @@ package com.security.keycloak.dto;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Value
-@RequiredArgsConstructor
+
+@AllArgsConstructor
+@Getter
+@Setter
 @Builder
+@NoArgsConstructor
 public class UserResponse{
 
     String id;
