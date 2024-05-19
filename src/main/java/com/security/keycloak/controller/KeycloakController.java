@@ -66,5 +66,10 @@ public class KeycloakController {
         return authService.getCurrentUser(authorizationHeader);
     }
 
+    @GetMapping("/getRoles")
+    public ResponseEntity<?> obtenerRoles(@RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        return ResponseEntity.ok(authService.getRoles(authorizationHeader));
+    }
+
 
 }
