@@ -24,8 +24,8 @@ import com.security.keycloak.service.AuthService;
 import com.security.keycloak.service.IKeycloakService;
 
 @RestController
-@RequestMapping("/keycloak")
 @PreAuthorize("hasRole('admin_client')")
+@RequestMapping("/keycloak")
 @CrossOrigin("*")
 public class KeycloakController {
 
@@ -64,6 +64,7 @@ public class KeycloakController {
         return ResponseEntity.ok("User deleted successfully");
     }
 
+    @PreAuthorize("hasRole('user_client')")
     @GetMapping("/getCurrentUser")
     public UserResponse obtenerUsername(@RequestHeader("Authorization") String authorizationHeader) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return authService.getCurrentUser(authorizationHeader);
