@@ -28,11 +28,22 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_HTTP_RELATIVE_PATH: /auth
     ports:
       - 8090:8080
     restart: always
     depends_on:
       - postgres
+    networks:
+      - keycloak_network
+
+  service-keycloak:
+    image: service-keycloak
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8091
     networks:
       - keycloak_network
 

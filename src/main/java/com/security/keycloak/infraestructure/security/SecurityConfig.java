@@ -1,4 +1,4 @@
-package com.security.keycloak.config;
+package com.security.keycloak.infraestructure.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,10 +24,10 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(http -> {
-                    http.requestMatchers("/keycloak/**").permitAll();
-                    http.anyRequest().authenticated();
-                })
+                .authorizeHttpRequests(http -> http
+                    .requestMatchers("/keycloak/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
+                    .anyRequest()
+                    .authenticated())
                 .oauth2ResourceServer(oauth -> {
                     oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter));
                 })
