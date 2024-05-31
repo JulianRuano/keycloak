@@ -43,7 +43,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8080:8091
+      - 8080:8080
     networks:
       - keycloak_network
 
