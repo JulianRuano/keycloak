@@ -9,6 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - 5433:5432
+    container_name: postgres
     networks:
       - keycloak_network
 
@@ -34,6 +35,7 @@ services:
     restart: always
     depends_on:
       - postgres
+    container_name: keycloak
     networks:
       - keycloak_network
 
@@ -44,6 +46,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8080:8080
+    container_name: service-keycloak
     networks:
       - keycloak_network
 
