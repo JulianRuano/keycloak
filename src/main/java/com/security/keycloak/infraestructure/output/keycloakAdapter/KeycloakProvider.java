@@ -22,8 +22,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-
-
+/**
+ * Adaptador para la gestión de Keycloak utilizando el cliente de administración de Keycloak.
+ * Implementa las interfaces IRealmResourceOutputPort y IKeycloakTokenOutputPort.
+ */
 @Component
 public class KeycloakProvider implements IRealmResourceOutputPort , IKeycloakTokenOutputPort{
 
@@ -54,6 +56,11 @@ public class KeycloakProvider implements IRealmResourceOutputPort , IKeycloakTok
     @Value("${jwt.auth.converter.resource-id}")
     private String CLIENT_ID;
 
+    /**
+     * Obtiene el recurso del Realm de Keycloak.
+     *
+     * @return el recurso del Realm de Keycloak
+     */
     @Override
     public RealmResource getRealmResource() {
         Keycloak keycloak = KeycloakBuilder.builder()
@@ -71,27 +78,43 @@ public class KeycloakProvider implements IRealmResourceOutputPort , IKeycloakTok
         return keycloak.realm(REALM_NAME); 
     }
 
+    /**
+     * Obtiene el recurso de usuarios del Realm de Keycloak.
+     *
+     * @return el recurso de usuarios del Realm de Keycloak
+     */
     @Override
     public UsersResource getUserResource() {
         RealmResource realmResource = getRealmResource();
         return realmResource.users();
     }
 
+    /**
+     * Obtiene el token JWT de Keycloak.
+     *
+     * @param auth los datos de autenticación
+     * @return el token JWT
+     */
     @Override
     public String getToken(Auth auth) {
-        
+         // Crear un MultiValueMap para almacenar los parámetros del formulario de solicitud
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+
+        // Agregar los parámetros requeridos al formulario
         formData.add("client_id", CLIENT_ID);
         formData.add("grant_type", "password");
         formData.add("username", auth.getUsername());
         formData.add("password", auth.getPassword());
         formData.add("client_secret", CLIENT_SECRET);
         
+        // Crear los encabezados HTTP y establecer el tipo de contenido a application/x-www-form-urlencoded
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        // Enviar una solicitud POST a la URL del token y recibir la respuesta en una entidad ResponseEntity
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
 
+        // Devolver el cuerpo de la respuesta, que contiene el token de autenticación
         ResponseEntity<String> response = new RestTemplate().postForEntity(tokenUrl, requestEntity, String.class);
 
         return response.getBody();
